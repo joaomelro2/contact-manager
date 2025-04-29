@@ -1,13 +1,16 @@
+package test;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import src.ContatoGui;
 
-import static org.junit.jupiter.api.Assertions.*;
+class ContatoGuiTest {
 
-class FicheiroContatoTest {
-
+    private ContatoGui contatoGui;
     @BeforeEach
     void setUp() {
+        contatoGui = new ContatoGui();
     }
 
     @AfterEach
@@ -15,10 +18,6 @@ class FicheiroContatoTest {
     }
 
     @Test
-    void salvarContatos() {
-    }
-
-    @Test
-    void carregarContatos() {
+    void adicionarContato() {
     }
 }

@@ -1,5 +1,9 @@
+package test;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import src.AddEditPesquisar;
+import src.Contato;
 
 import java.util.ArrayList;
 
