@@ -1,11 +1,10 @@
 package src;
-
 public class Contato{
     private String nome;
     private String telefone;
     private String email;
 
-    // CONSTRUTOR
+    
     public Contato(String nome, String telefone, String email)
     {
         this.nome = nome;
@@ -13,7 +12,7 @@ public class Contato{
         this.email = email;
     }
 
-    // GETTERS E SETTERS
+    
     public String getNome()
     {
         return this.nome;

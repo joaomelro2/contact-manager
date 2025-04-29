@@ -8,14 +8,19 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class ContatoGui extends JFrame {
-    private AddEditPesquisar manipular;
+    private GestorContatos manipular;
     private JTable tabela;
     private DefaultTableModel modeloTabela;
     private boolean ordemCrescenteNome = true;
     private boolean ordemCrescenteEmail = true;
 
     public ContatoGui() {
-        manipular = new AddEditPesquisar();
+        try {
+            manipular = new GestorContatos(new FicheiroContatos());
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Erro ao carregar contatos!", "Erro", JOptionPane.ERROR_MESSAGE);
+            manipular = null;
+        }
 
         setTitle("Agenda De Contatos");
         setSize(600, 400);
@@ -48,13 +53,14 @@ public class ContatoGui extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
         add(painelBotoes, BorderLayout.SOUTH);
 
-        carregarContatosDoArquivo();
         atualizarTabela();
 
         setVisible(true);
     }
 
     private void adicionarContato(ActionEvent e) {
+        if (manipular == null) return;
+
         String nome = JOptionPane.showInputDialog("Nome:");
         if (nome == null || nome.isEmpty()) return;
 
@@ -63,20 +69,22 @@ public class ContatoGui extends JFrame {
             telefone = JOptionPane.showInputDialog("Telefone (deve começar com +351 e conter 9 dígitos):");
         } while (!validarTelefone(telefone));
 
-        // Remover o código "+351" antes de armazenar
-        String telefoneSemCodigo = telefone.replace("+351", "").trim();
-
         String email;
         do {
             email = JOptionPane.showInputDialog("Email (deve conter @):");
         } while (!validarEmail(email));
 
-        manipular.adicionarContato(new Contato(nome, telefoneSemCodigo, email));  // Armazena sem +351
-        salvarContatosNoArquivo();
-        atualizarTabela();
+        try {
+            manipular.adicionarContato(new Contato(nome, telefone, email));
+            atualizarTabela();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao adicionar contato!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void editarContato(ActionEvent e) {
+        if (manipular == null) return;
+
         int linhaSelecionada = tabela.getSelectedRow();
         if (linhaSelecionada == -1) {
             JOptionPane.showMessageDialog(this, "Selecione um contato para editar.");
@@ -92,20 +100,22 @@ public class ContatoGui extends JFrame {
             novoTelefone = JOptionPane.showInputDialog("Novo Telefone (deve começar com +351 e conter 9 dígitos):", modeloTabela.getValueAt(linhaSelecionada, 1));
         } while (!validarTelefone(novoTelefone));
 
-        // Remove o código "+351" antes de armazenar
-        String novoTelefoneSemCodigo = novoTelefone.replace("+351", "").trim();
-
         String novoEmail;
         do {
             novoEmail = JOptionPane.showInputDialog("Novo Email (deve conter @):", modeloTabela.getValueAt(linhaSelecionada, 2));
         } while (!validarEmail(novoEmail));
 
-        manipular.editarContato(nomeAntigo, novoNome, novoTelefoneSemCodigo, novoEmail);  // Armazena sem +351
-        salvarContatosNoArquivo();
-        atualizarTabela();
+        try {
+            manipular.editarContato(nomeAntigo, novoNome, novoTelefone, novoEmail);
+            atualizarTabela();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(this, "Erro ao editar contato!", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void pesquisarContato(ActionEvent e) {
+        if (manipular == null) return;
+
         String termo = JOptionPane.showInputDialog("Pesquisar por:");
         if (termo != null && !termo.isEmpty()) {
             List<Contato> resultados = manipular.pesquisarContato(termo);
@@ -114,6 +124,8 @@ public class ContatoGui extends JFrame {
     }
 
     private void ordenarContatos(boolean porNome) {
+        if (manipular == null) return;
+
         if (porNome) {
             manipular.ordenarPorNome(ordemCrescenteNome);
             ordemCrescenteNome = !ordemCrescenteNome;
@@ -125,32 +137,15 @@ public class ContatoGui extends JFrame {
     }
 
     private void atualizarTabela() {
-        atualizarTabela(manipular.getContatos());
+        if (manipular != null) {
+            atualizarTabela(manipular.getTodosContatos());
+        }
     }
 
     private void atualizarTabela(List<Contato> lista) {
         modeloTabela.setRowCount(0);
         for (Contato contato : lista) {
             modeloTabela.addRow(new Object[]{contato.getNome(), contato.getTelefone(), contato.getEmail()});
-        }
-    }
-
-    private void salvarContatosNoArquivo() {
-        try {
-            FicheiroContato.salvarContatos(manipular.getContatos());
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Erro ao salvar contatos no ficheiro!", "Erro", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    private void carregarContatosDoArquivo() {
-        try {
-            List<Contato> contatos = FicheiroContato.carregarContatos();
-            for (Contato c : contatos) {
-                manipular.adicionarContato(c);
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Erro ao carregar contatos do ficheiro!", "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -168,9 +163,5 @@ public class ContatoGui extends JFrame {
         }
         JOptionPane.showMessageDialog(this, "Email inválido! Deve conter @.", "Erro", JOptionPane.ERROR_MESSAGE);
         return false;
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(ContatoGui::new);
     }
 }
