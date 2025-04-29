@@ -1,4 +1,4 @@
-package src;
+package AgendaContactos;
 public class Contato{
     private String nome;
     private String telefone;
