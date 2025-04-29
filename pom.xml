@@ -1,9 +1,19 @@
-<dependencies>
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ismt.pt</groupId>
+    <artifactId>Projeto-Agenda-Contactos</artifactId>
+    <version>1</version>
+    <packaging>pom</packaging>
+
+    <modules>
+    </modules>
+
+    <dependencies>
     <!-- JUnit 5 -->
     <dependency>
         <groupId>org.junit.jupiter</groupId>
         <artifactId>junit-jupiter</artifactId>
-        <version>5.10.0</version> <!-- ou uma versão recente -->
+        <version>5.10.0</version>
         <scope>test</scope>
     </dependency>
 
@@ -11,7 +21,8 @@
     <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>5.6.0</version> <!-- ou uma versão recente -->
+        <version>5.6.0</version>
         <scope>test</scope>
     </dependency>
 </dependencies>
+</project>
