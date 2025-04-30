@@ -18,5 +18,6 @@ class ContatoGuiTest {
 
     @Test
     void adicionarContato() {
+        
     }
 }
