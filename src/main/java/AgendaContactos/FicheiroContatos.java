@@ -4,11 +4,23 @@ import java.io.*;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Classe que implementa a interface {@link ContatoRepository} para o acesso aos dados de contactos a partir de um ficheiro de texto.
+ * Esta classe permite salvar e carregar a lista de contactos a partir de um ficheiro localizado em {@link FicheiroContatos#CAMINHO_FICHEIRO}.
+ */
 public class FicheiroContatos implements ContatoRepository {
 
+    /** Caminho do ficheiro onde os contactos são armazenados. */
     private static final String CAMINHO_FICHEIRO = "contatos.txt";
 
 
+    /**
+     * Método que salva a lista de contactos no ficheiro.
+     * Cada contacto é salvo em uma linha no formato "nome,telefone,email".
+     * 
+     * @param contatos Lista de contactos a ser salva no ficheiro.
+     * @throws IOException Caso ocorra um erro durante o processo de gravação.
+     */
     @Override
     public void salvar(List<Contato> contatos) throws IOException{
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(CAMINHO_FICHEIRO))) {
@@ -19,6 +31,13 @@ public class FicheiroContatos implements ContatoRepository {
         }
     }
 
+    /**
+     * Método que carrega a lista de contactos a partir do ficheiro.
+     * Cada linha do ficheiro é dividida por vírgula para obter as informações de cada contacto.
+     * 
+     * @return Lista de contactos carregada a partir do ficheiro.
+     * @throws IOException Caso ocorra um erro durante o processo de leitura.
+     */
     @Override
     public List<Contato> carregar() throws IOException {
         List<Contato> contatos = new ArrayList<>();
@@ -39,6 +58,11 @@ public class FicheiroContatos implements ContatoRepository {
         return contatos;
     }
 
+    /**
+     * Método estático que salva a lista de contactos no ficheiro.
+     * 
+     * @param contatos Lista de contactos a ser salva no ficheiro.
+     */
     public static void guardarContatos(List<Contato> contatos) {
         try(BufferedWriter writer = new BufferedWriter( new FileWriter(CAMINHO_FICHEIRO))){
             for (Contato c : contatos){
@@ -49,7 +73,12 @@ public class FicheiroContatos implements ContatoRepository {
                 System.out.println("Erro ao guardar os contatos: " + e.getMessage());
             }
         }
-
+    
+     /**
+     * Método estático que carrega a lista de contactos a partir do ficheiro.
+     * 
+     * @return Lista de contactos carregada do ficheiro.
+     */
     public static List<Contato> carregarContatos() {
         List<Contato> contatos = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(CAMINHO_FICHEIRO))) {
