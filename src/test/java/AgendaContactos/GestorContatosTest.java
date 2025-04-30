@@ -175,4 +175,21 @@ public class GestorContatosTest {
         gestorContatos.editarContato("Bruno", "Bruno", "222", "bruno@email.com");
         assertEquals("Bruno", gestorContatos.getTodosContatos().get(0).getNome());
     }
+
+    @Test
+    void editarContatoComDadosVazios() throws IOException {
+        List<Contato> lista = new ArrayList<>();
+        lista.add(c1);
+        when(contatoRepository.carregar()).thenReturn(lista);
+        gestorContatos = new GestorContatos(contatoRepository);
+
+        gestorContatos.editarContato("Bruno", "Bruno", "", "bruno.silva@email.com");
+        assertEquals("", gestorContatos.getTodosContatos().get(0).getTelefone());
+
+        gestorContatos.editarContato("Bruno", "Bruno", "911111", "");
+        assertEquals("", gestorContatos.getTodosContatos().get(0).getEmail());
+
+        gestorContatos.editarContato("Bruno", "", "555", "bruno.silva@email.com");
+        assertEquals("", gestorContatos.getTodosContatos().get(0).getNome());
+    }
 }
