@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -134,9 +135,9 @@ public class GestorContatosTest {
     @Test
     void adicionarContatoComDadosDuplicados() throws IOException {
         Contato c2 = new Contato("Ana", "111", "ana@email.com");
-        when(contatoRepository.carregar()).thenReturn(Arrays.asList(c1));
+        when(contatoRepository.carregar()).thenReturn(Collections.singletonList(c1));
         gestorContatos.adicionarContato(c2);
-        assertEquals(1, gestorContatos.getTodosContatos().size());  // Verifica que o contato duplicado não foi adicionado
+        assertEquals(1, gestorContatos.getTodosContatos().size());
     }
 
     @Test
@@ -174,5 +175,22 @@ public class GestorContatosTest {
         gestorContatos = new GestorContatos(contatoRepository);
         gestorContatos.editarContato("Bruno", "Bruno", "222", "bruno@email.com");
         assertEquals("Bruno", gestorContatos.getTodosContatos().get(0).getNome());
+    }
+
+    @Test
+    void editarContatoComDadosVazios() throws IOException {
+        List<Contato> lista = new ArrayList<>();
+        lista.add(c1);
+        when(contatoRepository.carregar()).thenReturn(lista);
+        gestorContatos = new GestorContatos(contatoRepository);
+
+        gestorContatos.editarContato("Bruno", "Bruno", "", "bruno.silva@email.com");
+        assertEquals("", gestorContatos.getTodosContatos().get(0).getTelefone());
+
+        gestorContatos.editarContato("Bruno", "Bruno", "911111", "");
+        assertEquals("", gestorContatos.getTodosContatos().get(0).getEmail());
+
+        gestorContatos.editarContato("Bruno", "", "555", "bruno.silva@email.com");
+        assertEquals("", gestorContatos.getTodosContatos().get(0).getNome());
     }
 }
