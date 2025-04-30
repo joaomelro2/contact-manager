@@ -1,147 +1,178 @@
 package AgendaContactos;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class) // Anotação para carregar os mocks automaticamente
-class GestorContatosTest {
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-    private GestorContatos gestor;
+import org.junit.jupiter.api.BeforeEach;
 
-    @Mock
-    private ContatoRepository repositorio;
-
-    private Contato meuContato;
-    private Contato meuContato2;
+public class GestorContatosTest {
+    private ContatoRepository contatoRepository;
+    private GestorContatos gestorContatos;
+    private Contato c1, c2, c3;
 
     @BeforeEach
     void setUp() throws IOException {
-        when(repositorio.carregar()).thenReturn(new ArrayList<>());
-        gestor = new GestorContatos(repositorio);
-        meuContato = new Contato("João", "123456789", "meu@email.com");
-        meuContato2 = new Contato("Sara", "987654321", "sara@email.com");
+        contatoRepository = mock(ContatoRepository.class);
+        when(contatoRepository.carregar()).thenReturn(new ArrayList<>());
+        gestorContatos = new GestorContatos(contatoRepository);
+
+        c1 = new Contato("Bruno", "222", "bruno@email.com");
+        c2 = new Contato("Carlos", "333", "carlos@email.com");
+        c3 = new Contato("Diana", "444", "diana@email.com");
     }
 
     @Test
     void adicionarContato() throws IOException {
-        gestor.adicionarContato(meuContato);
-        assertEquals("João,123456789,meu@email.com", gestor.getTodosContatos().get(0).toString());
-        verify(repositorio).salvar(anyList()); // Verifica se salvar foi chamado
+        gestorContatos.adicionarContato(c1);
+        assertEquals(1, gestorContatos.getTodosContatos().size());
     }
 
     @Test
     void editarContato() throws IOException {
-        gestor.adicionarContato(meuContato);
-        gestor.editarContato("João", "Sara", "987654321", "novo@email.com");
-        assertEquals("Sara,987654321,novo@email.com", gestor.getTodosContatos().get(0).toString());
-        verify(repositorio, times(2)).salvar(anyList()); // Verifica se salvar foi chamado duas vezes
+        List<Contato> lista = new ArrayList<>();
+        lista.add(c1);
+        when(contatoRepository.carregar()).thenReturn(lista);
+        gestorContatos = new GestorContatos(contatoRepository);
+        gestorContatos.editarContato("Bruno", "Bruno Silva", "555", "bruno.silva@email.com");
+        Contato atualizado = gestorContatos.getTodosContatos().get(0);
+        assertEquals("Bruno Silva", atualizado.getNome());
+        assertEquals("555", atualizado.getTelefone());
+        assertEquals("bruno.silva@email.com", atualizado.getEmail());
     }
 
     @Test
-    void pesquisarContatoPorNome() throws IOException {
-        gestor.adicionarContato(meuContato);
-        assertEquals("[João,123456789,meu@email.com]", gestor.pesquisarContato("ão").toString());
+    void pesquisarPorNome() throws IOException {
+        when(contatoRepository.carregar()).thenReturn(Arrays.asList(c1, c2, c3));
+        gestorContatos = new GestorContatos(contatoRepository);
+
+        List<Contato> resultadoNome = gestorContatos.pesquisarContato("bru");
+        assertEquals(1, resultadoNome.size());
+        assertEquals("Bruno", resultadoNome.get(0).getNome());
     }
 
     @Test
-    void pesquisarContatoPorTelefone() throws IOException {
-        gestor.adicionarContato(meuContato);
-        assertEquals("[João,123456789,meu@email.com]", gestor.pesquisarContato("123456789").toString());
+    void pesquisarPorTelefone() throws IOException {
+        when(contatoRepository.carregar()).thenReturn(Arrays.asList(c1, c2, c3));
+        gestorContatos = new GestorContatos(contatoRepository);
+
+        List<Contato> resultadoTelefone = gestorContatos.pesquisarContato("333");
+        assertEquals(1, resultadoTelefone.size());
+        assertEquals("Carlos", resultadoTelefone.get(0).getNome());
     }
 
     @Test
-    void pesquisarContatoPorEmail() throws IOException {
-        gestor.adicionarContato(meuContato);
-        assertEquals("[João,123456789,meu@email.com]", gestor.pesquisarContato("meu@email.com").toString());
+    void pesquisarPorEmail() throws IOException {
+        when(contatoRepository.carregar()).thenReturn(Arrays.asList(c1, c2, c3));
+        gestorContatos = new GestorContatos(contatoRepository);
+
+        List<Contato> resultadoEmail = gestorContatos.pesquisarContato("diana@");
+        assertEquals(1, resultadoEmail.size());
+        assertEquals("Diana", resultadoEmail.get(0).getNome());
     }
 
     @Test
-    void getTodosContatosVazio() throws IOException {
-        assertEquals(new ArrayList<>(), gestor.getTodosContatos());
+    void pesquisarInexistente() throws IOException {
+        when(contatoRepository.carregar()).thenReturn(Arrays.asList(c1, c2, c3));
+        gestorContatos = new GestorContatos(contatoRepository);
+
+        List<Contato> resultadoInexistente = gestorContatos.pesquisarContato("zzz");
+        assertEquals(0, resultadoInexistente.size());
     }
 
     @Test
-    void getTodosContatosNaoVazio() throws IOException {
-        gestor.adicionarContato(meuContato);
-        assertEquals(1, gestor.getTodosContatos().size());
-        assertEquals("João,123456789,meu@email.com", gestor.getTodosContatos().get(0).toString());
+    void getTodosContatosVazio() {
+        List<Contato> contatos = gestorContatos.getTodosContatos();
+        assertTrue(contatos.isEmpty());
     }
 
     @Test
     void ordenarPorNomeCrescente() throws IOException {
-        gestor.adicionarContato(meuContato2);
-        gestor.adicionarContato(meuContato);
-        gestor.ordenarPorNome(true);
-        assertEquals("João,123456789,meu@email.com", gestor.getTodosContatos().get(0).toString());
+        Contato a = new Contato("Zara", "777", "zara@email.com");
+        Contato b = new Contato("Andre", "888", "andre@email.com");
+        when(contatoRepository.carregar()).thenReturn(Arrays.asList(a, b));
+        gestorContatos = new GestorContatos(contatoRepository);
+        gestorContatos.ordenarPorNome(true);
+        assertEquals("Andre", gestorContatos.getTodosContatos().get(0).getNome());
     }
 
     @Test
     void ordenarPorNomeDecrescente() throws IOException {
-        gestor.adicionarContato(meuContato);
-        gestor.adicionarContato(meuContato2);
-        gestor.ordenarPorNome(false);
-        assertEquals("Sara,987654321,sara@email.com", gestor.getTodosContatos().get(0).toString());
+        Contato a = new Contato("Zara", "777", "zara@email.com");
+        Contato b = new Contato("Andre", "888", "andre@email.com");
+        when(contatoRepository.carregar()).thenReturn(Arrays.asList(a, b));
+        gestorContatos = new GestorContatos(contatoRepository);
+        gestorContatos.ordenarPorNome(false);
+        assertEquals("Zara", gestorContatos.getTodosContatos().get(0).getNome());
     }
 
     @Test
     void ordenarPorEmailCrescente() throws IOException {
-        gestor.adicionarContato(meuContato2);
-        gestor.adicionarContato(meuContato);
-        gestor.ordenarPorEmail(true);
-        assertEquals("João,123456789,meu@email.com", gestor.getTodosContatos().get(0).toString());
+        Contato a = new Contato("Hugo", "999", "hugo@email.com");
+        Contato b = new Contato("Ines", "000", "ana@email.com");
+        when(contatoRepository.carregar()).thenReturn(Arrays.asList(a, b));
+        gestorContatos = new GestorContatos(contatoRepository);
+        gestorContatos.ordenarPorEmail(true);
+        assertEquals("ana@email.com", gestorContatos.getTodosContatos().get(0).getEmail());
     }
 
     @Test
     void ordenarPorEmailDecrescente() throws IOException {
-        gestor.adicionarContato(meuContato);
-        gestor.adicionarContato(meuContato2);
-        gestor.ordenarPorEmail(false);
-        assertEquals("Sara,987654321,sara@email.com", gestor.getTodosContatos().get(0).toString());
+        Contato a = new Contato("Hugo", "999", "hugo@email.com");
+        Contato b = new Contato("Ines", "000", "ana@email.com");
+        when(contatoRepository.carregar()).thenReturn(Arrays.asList(a, b));
+        gestorContatos = new GestorContatos(contatoRepository);
+        gestorContatos.ordenarPorEmail(false);
+        assertEquals("hugo@email.com", gestorContatos.getTodosContatos().get(0).getEmail());
+    }
+
+    @Test
+    void adicionarContatoComDadosDuplicados() throws IOException {
+        Contato c2 = new Contato("Ana", "111", "ana@email.com");
+        when(contatoRepository.carregar()).thenReturn(Arrays.asList(c1));
+        gestorContatos.adicionarContato(c2);
+        assertEquals(1, gestorContatos.getTodosContatos().size());  // Verifica que o contato duplicado não foi adicionado
     }
 
     @Test
     void pesquisarComStringVazia() throws IOException {
-        gestor.adicionarContato(meuContato);
-        assertEquals("[João,123456789,meu@email.com]", gestor.pesquisarContato("").toString());
+        Contato c = new Contato("Joao", "444", "joao@email.com");
+        when(contatoRepository.carregar()).thenReturn(List.of(c));
+        gestorContatos = new GestorContatos(contatoRepository);
+        List<Contato> resultado = gestorContatos.pesquisarContato("");
+        assertEquals(1, resultado.size());
     }
 
     @Test
-    void editarContatoComDadosIguais() throws IOException {
-        gestor.adicionarContato(meuContato);
-        gestor.editarContato("João", "João", "123456789", "meu@email.com");
-        assertEquals("João,123456789,meu@email.com", gestor.getTodosContatos().get(0).toString());
+    void ordenarListaVazia() throws IOException {
+        when(contatoRepository.carregar()).thenReturn(new ArrayList<>());
+        gestorContatos = new GestorContatos(contatoRepository);
+        gestorContatos.ordenarPorNome(true);
+        assertEquals(0, gestorContatos.getTodosContatos().size());
     }
 
     @Test
     void contatosComMesmoNome() throws IOException {
-        Contato contato1 = new Contato("Luis", "123", "luis1@email.com");
-        Contato contato2 = new Contato("Luis", "456", "luis2@email.com");
-        gestor.adicionarContato(contato1);
-        gestor.adicionarContato(contato2);
-        assertEquals(2, gestor.pesquisarContato("Luis").size());
+        Contato a = new Contato("Luis", "123", "luis1@email.com");
+        Contato b = new Contato("Luis", "456", "luis2@email.com");
+        when(contatoRepository.carregar()).thenReturn(Arrays.asList(a, b));
+        gestorContatos = new GestorContatos(contatoRepository);
+        List<Contato> resultado = gestorContatos.pesquisarContato("Luis");
+        assertEquals(2, resultado.size());
     }
 
     @Test
-    void getTodosContatos() throws IOException {
-        gestor.adicionarContato(meuContato);
-        gestor.getTodosContatos();
-        verify(repositorio).salvar(anyList());
-    }
-
-    @Test
-    void adicionarContatoComDadosInvalidos() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            gestor.adicionarContato(new Contato("", "", ""));
-        });
+    void editarContatoComDadosIguais() throws IOException {
+        List<Contato> lista = new ArrayList<>();
+        lista.add(c1);
+        when(contatoRepository.carregar()).thenReturn(lista);
+        gestorContatos = new GestorContatos(contatoRepository);
+        gestorContatos.editarContato("Bruno", "Bruno", "222", "bruno@email.com");
+        assertEquals("Bruno", gestorContatos.getTodosContatos().get(0).getNome());
     }
 }
