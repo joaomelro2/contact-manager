@@ -15,7 +15,7 @@ public class FicheiroContatos implements ContatoRepository {
             for (Contato contato : contatos) {
                 writer.write(contato.toString());
                 writer.newLine();
-            }
+            }//
         }
     }
 
