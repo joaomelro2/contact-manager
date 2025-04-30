@@ -15,14 +15,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ContatoGuiTest {
 
     private ContatoGui gui;
-    private GestorContatos gestorMock;
 
     @BeforeEach
     void setUp() throws Exception {
         ContatoRepository mockRepo = mock(ContatoRepository.class);
         when(mockRepo.carregar()).thenReturn(new ArrayList<>());
 
-        gestorMock = new GestorContatos(mockRepo);
+        GestorContatos gestorMock = new GestorContatos(mockRepo);
 
         gui = new ContatoGui();
 

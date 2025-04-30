@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -134,9 +135,9 @@ public class GestorContatosTest {
     @Test
     void adicionarContatoComDadosDuplicados() throws IOException {
         Contato c2 = new Contato("Ana", "111", "ana@email.com");
-        when(contatoRepository.carregar()).thenReturn(Arrays.asList(c1));
+        when(contatoRepository.carregar()).thenReturn(Collections.singletonList(c1));
         gestorContatos.adicionarContato(c2);
-        assertEquals(1, gestorContatos.getTodosContatos().size());  // Verifica que o contato duplicado não foi adicionado
+        assertEquals(1, gestorContatos.getTodosContatos().size());
     }
 
     @Test
