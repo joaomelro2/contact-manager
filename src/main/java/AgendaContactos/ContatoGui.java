@@ -7,13 +7,27 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
+/**
+ * Classe que representa a interface gráfica para gestão de contactos.
+ * Permite adicionar, editar, pesquisar e ordenar os contactos numa tabela.
+ * Utiliza um modelo de dados fornecido pela classe {@link GestorContatos}.
+ */
 public class ContatoGui extends JFrame {
+    /** Gestor de contactos que manipula os dados. */
     private GestorContatos manipular;
+     /** Gestor de contactos que manipula os dados. */
     private JTable tabela;
+    /** Modelo da tabela de contactos. */
     private DefaultTableModel modeloTabela;
+    /** Controle da ordem crescente/decrescente ao ordenar por nome. */
     private boolean ordemCrescenteNome = true;
+    /** Controle da ordem crescente/decrescente ao ordenar por e-mail. */
     private boolean ordemCrescenteEmail = true;
 
+     /**
+     * Construtor que inicializa a interface gráfica de contactos.
+     * Carrega os dados a partir do repositório e configura os componentes visuais.
+     */
     public ContatoGui() {
         try {
             manipular = new GestorContatos(new FicheiroContatos());
@@ -58,6 +72,12 @@ public class ContatoGui extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Método responsável por adicionar um novo contacto.
+     * Solicita ao utilizador os dados e valida antes de adicionar.
+     * 
+     * @param e Evento acionado ao clicar no botão "Adicionar".
+     */
     private void adicionarContato(ActionEvent e) {
         if (manipular == null) return;
 
@@ -82,6 +102,12 @@ public class ContatoGui extends JFrame {
         }
     }
 
+     /**
+     * Método responsável por editar um contacto existente.
+     * O utilizador seleciona um contacto para editar e insere os novos dados.
+     * 
+     * @param e Evento acionado ao clicar no botão "Editar".
+     */
     private void editarContato(ActionEvent e) {
         if (manipular == null) return;
 
@@ -113,6 +139,11 @@ public class ContatoGui extends JFrame {
         }
     }
 
+    /**
+     * Método para pesquisar contactos com base num termo de pesquisa.
+     * 
+     * @param e Evento acionado ao clicar no botão "Pesquisar".
+     */
     private void pesquisarContato(ActionEvent e) {
         if (manipular == null) return;
 
@@ -123,6 +154,12 @@ public class ContatoGui extends JFrame {
         }
     }
 
+     /**
+     * Método para ordenar os contactos por nome ou e-mail.
+     * Alterna a ordem crescente/decrescente.
+     * 
+     * @param porNome Se verdadeiro, ordena por nome; caso contrário, por e-mail.
+     */
     private void ordenarContatos(boolean porNome) {
         if (manipular == null) return;
 
@@ -136,12 +173,20 @@ public class ContatoGui extends JFrame {
         atualizarTabela();
     }
 
+    /**
+     * Atualiza a tabela com todos os contactos.
+     */
     private void atualizarTabela() {
         if (manipular != null) {
             atualizarTabela(manipular.getTodosContatos());
         }
     }
 
+     /**
+     * Atualiza a tabela com uma lista específica de contactos.
+     * 
+     * @param lista Lista de contactos a ser exibida na tabela.
+     */
     private void atualizarTabela(List<Contato> lista) {
         modeloTabela.setRowCount(0);
         for (Contato contato : lista) {
@@ -149,6 +194,12 @@ public class ContatoGui extends JFrame {
         }
     }
 
+    /**
+     * Valida se o telefone segue o formato correto (deve começar com +351 e ter 9 dígitos).
+     * 
+     * @param telefone O número de telefone a validar.
+     * @return Verdadeiro se o telefone for válido, falso caso contrário.
+     */
     private boolean validarTelefone(String telefone) {
         if (telefone != null && telefone.matches("\\+351\\d{9}")) {
             return true;
@@ -157,6 +208,12 @@ public class ContatoGui extends JFrame {
         return false;
     }
 
+    /**
+     * Valida se o e-mail contém o símbolo "@".
+     * 
+     * @param email O e-mail a validar.
+     * @return Verdadeiro se o e-mail for válido, falso caso contrário.
+     */
     private boolean validarEmail(String email) {
         if (email != null && email.contains("@")) {
             return true;
