@@ -12,4 +12,6 @@ public interface ContatoRepository {
 
     
     List<Contato> carregar() throws IOException;
+
+    // TODO
 }
