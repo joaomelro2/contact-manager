@@ -11,8 +11,15 @@ import java.util.ArrayList;
 public class FicheiroContatos implements ContatoRepository {
 
     /** Caminho do ficheiro onde os contactos são armazenados. */
-    private static final String CAMINHO_FICHEIRO = "contatos.txt";
+    private static String caminhoFicheiro;
+    
+    public FicheiroContatos(){
+        caminhoFicheiro = "contatos.txt";
+    }
 
+    public FicheiroContatos(String path){
+        caminhoFicheiro = path;
+    }
 
     /**
      * Método que salva a lista de contactos no ficheiro.
@@ -23,7 +30,7 @@ public class FicheiroContatos implements ContatoRepository {
      */
     @Override
     public void salvar(List<Contato> contatos) throws IOException{
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(CAMINHO_FICHEIRO))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoFicheiro))) {
             for (Contato contato : contatos) {
                 writer.write(contato.toString());
                 writer.newLine();
@@ -41,7 +48,7 @@ public class FicheiroContatos implements ContatoRepository {
     @Override
     public List<Contato> carregar() throws IOException {
         List<Contato> contatos = new ArrayList<>();
-        File file = new File(CAMINHO_FICHEIRO);
+        File file = new File(caminhoFicheiro);
         if(!file.exists()) {
             return contatos;
         }
@@ -64,7 +71,7 @@ public class FicheiroContatos implements ContatoRepository {
      * @param contatos Lista de contactos a ser salva no ficheiro.
      */
     public static void guardarContatos(List<Contato> contatos) {
-        try(BufferedWriter writer = new BufferedWriter( new FileWriter(CAMINHO_FICHEIRO))){
+        try(BufferedWriter writer = new BufferedWriter( new FileWriter(caminhoFicheiro))){
             for (Contato c : contatos){
                 writer.write(c.getNome() + "," + c.getTelefone() + "," + c.getEmail());
                 writer.newLine();
@@ -81,7 +88,7 @@ public class FicheiroContatos implements ContatoRepository {
      */
     public static List<Contato> carregarContatos() {
         List<Contato> contatos = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(CAMINHO_FICHEIRO))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(caminhoFicheiro))) {
             String linha;
             while((linha = reader.readLine()) != null) {
                 String[] dados = linha.split(",");
@@ -94,6 +101,6 @@ public class FicheiroContatos implements ContatoRepository {
         }
         return contatos;
     }
-    
+
 }
 
