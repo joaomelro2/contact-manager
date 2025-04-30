@@ -1,0 +1,1 @@
+typeSearchIndex = [{"l":"All Classes and Interfaces","u":"allclasses-index.html"},{"p":"AgendaContactos","l":"Contato"},{"p":"AgendaContactos","l":"ContatoGui"},{"p":"AgendaContactos","l":"ContatoRepository"},{"p":"AgendaContactos","l":"FicheiroContatos"},{"p":"AgendaContactos","l":"GestorContatos"},{"p":"AgendaContactos","l":"Main"}];updateSearchResults();
