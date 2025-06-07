@@ -30,7 +30,7 @@ public class ContatoGui extends JFrame {
      */
     public ContatoGui() {
         try {
-            manipular = new GestorContatos(new FicheiroContatos());
+           manipular = new GestorContatos(FicheiroContatos.getInstance());
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar contatos!", "Erro", JOptionPane.ERROR_MESSAGE);
             manipular = null;

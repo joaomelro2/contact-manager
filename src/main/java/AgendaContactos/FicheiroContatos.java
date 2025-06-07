@@ -10,12 +10,25 @@ import java.util.ArrayList;
  */
 public class FicheiroContatos implements ContatoRepository {
 
+    private static FicheiroContatos instancia;
+   
     /** Caminho do ficheiro onde os contactos são armazenados. */
     private static String caminhoFicheiro;
-    
-    public FicheiroContatos(){
-        caminhoFicheiro = "contatos.txt";
+   
+    private FicheiroContatos(){
+         caminhoFicheiro = "contatos.txt";
     }
+
+    public static FicheiroContatos getInstance() {
+        if (instancia == null) {
+            instancia = new FicheiroContatos();
+        }
+        return instancia;
+    }
+   
+    // public FicheiroContatos(){
+    //     caminhoFicheiro = "contatos.txt";
+    // }
 
     public FicheiroContatos(String path){
         caminhoFicheiro = path;
