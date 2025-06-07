@@ -95,7 +95,13 @@ public class ContatoGui extends JFrame {
         } while (!validarEmail(email));
 
         try {
-            manipular.adicionarContato(new Contato(nome, telefone, email));
+            Contato novo = new ContatoBuilder()
+                .comNome(nome)
+                .comTelefone(telefone)
+                .comEmail(email)
+                .construir();
+
+            manipular.adicionarContato(novo);
             atualizarTabela();
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Erro ao adicionar contato!", "Erro", JOptionPane.ERROR_MESSAGE);
