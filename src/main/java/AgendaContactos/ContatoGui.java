@@ -1,11 +1,13 @@
 package AgendaContactos;
 
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
 
 /**
  * Classe que representa a interface gráfica para gestão de contactos.
@@ -30,7 +32,7 @@ public class ContatoGui extends JFrame {
      */
     public ContatoGui() {
         try {
-           manipular = new GestorContatos(FicheiroContatos.getInstance());
+          manipular = new GestorContatos(RepositorioFactory.criarRepositorio());
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar contatos!", "Erro", JOptionPane.ERROR_MESSAGE);
             manipular = null;
