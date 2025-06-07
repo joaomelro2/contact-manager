@@ -54,6 +54,20 @@ public class ContatoGui extends JFrame {
         JButton btnOrdenarPorNome = new JButton("Ordenar por Nome");
         JButton btnOrdenarPorEmail = new JButton("Ordenar por Email");
 
+        JButton btnDesfazer = new JButton("Desfazer");
+        painelBotoes.add(btnDesfazer);
+        btnDesfazer.addActionListener(e -> desfazerAcao());
+
+
+        KeyStroke ctrlZ = KeyStroke.getKeyStroke("control Z");
+        tabela.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ctrlZ, "desfazerAcao");
+        tabela.getActionMap().put("desfazerAcao", new AbstractAction() {
+         @Override
+             public void actionPerformed(ActionEvent e) {
+                desfazerAcao();
+            }
+        });
+
         painelBotoes.add(btnAdicionar);
         painelBotoes.add(btnEditar);
         painelBotoes.add(btnPesquisar);
@@ -229,4 +243,22 @@ public class ContatoGui extends JFrame {
         JOptionPane.showMessageDialog(this, "Email inválido! Deve conter @.", "Erro", JOptionPane.ERROR_MESSAGE);
         return false;
     }
+
+    private void desfazerAcao() {
+    if (manipular == null) return;
+
+    try {
+        boolean sucesso = manipular.desfazerAcao();
+        if (sucesso) {
+            atualizarTabela();
+            JOptionPane.showMessageDialog(this, "Última alteração desfeita.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Nada para desfazer.");
+        }
+    } catch (IOException ex) {
+        JOptionPane.showMessageDialog(this, "Erro ao desfazer alteração.", "Erro", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+
 }

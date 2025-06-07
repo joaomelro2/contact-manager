@@ -1,4 +1,4 @@
-Joana Pires,+341919214867,joao.silva@yahoo.com
+Joana ,+351919214861,joao.silva@yahoo.com
 Maria Pereira,922256792,maria.pereira@outlook.com
 Carlos Souza,966131132,carlos.souza@live.com
 Ana Costa,952146337,ana.costa@live.com
@@ -48,5 +48,4 @@ Paulo Rocha,963596275,paulo.rocha@hotmail.com
 Eliane Silva,911122976,eliane.silva@hotmail.com
 Cesar Pereira,936783291,cesar.pereira@gmail.com
 Cristiane Lima,918570528,cristiane.lima@outlook.com
-Joao Melro,+351966183338,joaomelro2@gmail.com
-Joso,+351966183338,joaomelro2@gmail.com
+
