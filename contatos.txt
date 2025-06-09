@@ -1,4 +1,4 @@
-Joana Pires,+341919214867,joao.silva@yahoo.com
+Joana ,+351919214861,joao.silva@yahoo.com
 Maria Pereira,922256792,maria.pereira@outlook.com
 Carlos Souza,966131132,carlos.souza@live.com
 Ana Costa,952146337,ana.costa@live.com
@@ -28,7 +28,7 @@ Simone Gomes,963468406,simone.gomes@yahoo.com
 Thiago Pereira,934092852,thiago.pereira@yahoo.com
 Amanda Souza,967467108,amanda.souza@outlook.com
 Eduardo Silva,913068118,eduardo.silva@hotmail.com
-Mariana Lima,932924492,mariana.lima@hotmail.com
+Mariana Lima,+351932924492,mariana.lima@hotmail.com
 Joao Costa,919418371,joao.costa@hotmail.com
 Tatiane Oliveira,927759813,tatiane.oliveira@gmail.com
 Andre Martins,912283714,andre.martins@gmail.com

@@ -5,17 +5,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
+
+import java.util.Stack;
+
 /**
  * Classe responsável pela gestão de contactos. Permite adicionar, editar, pesquisar e ordenar contactos.
  * Utiliza um repositório para salvar e carregar os dados, sendo este repositório uma implementação da interface {@link ContatoRepository}.
  */
 public class GestorContatos {
 
+    private List<ObservadorContatos> observadores = new ArrayList<>();
+
     /** Lista de contactos geridos pelo gestor. */
     private List<Contato> contatos;
     /** Repositório para carregar e salvar os contactos. */
     private ContatoRepository repository;
 
+    private Stack<ContatoMemento> historico = new Stack<>();
     /**
      * Construtor da classe GestorContatos. Inicializa o gestor com o repositório fornecido e carrega os contactos existentes.
      * 
@@ -37,6 +44,9 @@ public class GestorContatos {
     public void adicionarContato(Contato contato) throws IOException {
         contatos.add(contato);
         repository.salvar(contatos);
+        notificar();
+
+        
     }
 
    
@@ -49,17 +59,61 @@ public class GestorContatos {
      * @param novoEmail O novo email do contacto.
      * @throws IOException Caso ocorra um erro ao salvar os contactos no repositório.
      */
-    public void editarContato(String nomeAntigo, String novoNome, String novoTelefone, String novoEmail) throws IOException {
-        for (Contato c : contatos) {
-            if (c.getNome().equalsIgnoreCase(nomeAntigo)) {
-                c.setNome(novoNome);
-                c.setTelefone(novoTelefone);
-                c.setEmail(novoEmail);
-                break;
-            }
+    public Contato buscarContatoPorNome(String nome) {
+    for (Contato c : contatos) {
+        if (c.getNome().equalsIgnoreCase(nome)) {
+            return c;
         }
-        repository.salvar(contatos);
     }
+    return null; // não encontrou
+}
+
+    public void editarContato(String nomeAntigo, String novoNome, String novoTelefone, String novoEmail) throws IOException {
+        Contato contatoOriginal = buscarContatoPorNome(nomeAntigo);
+        if(contatoOriginal != null){
+            historico.push(new ContatoMemento(contatoOriginal));
+
+            contatoOriginal.setNome(novoNome);
+            contatoOriginal.setTelefone(novoTelefone);
+            contatoOriginal.setEmail(novoEmail);
+            repository.salvar(contatos);
+            notificar();
+        }
+
+    }
+
+public boolean desfazerAcao() throws IOException {
+    if (historico.isEmpty()) {
+        return false; // Nada para desfazer
+    }
+
+    ContatoMemento memento = historico.pop();
+    Contato estadoAntigo = memento.restaurar();
+
+    Contato contatoAtual = null;
+
+    for (Contato c : contatos) {
+        if (c.getEmail().equals(estadoAntigo.getEmail())) {
+            contatoAtual = c;
+            break;
+        }
+    }
+
+    if (contatoAtual != null) {
+        contatoAtual.setNome(estadoAntigo.getNome());
+        contatoAtual.setTelefone(estadoAntigo.getTelefone());
+        contatoAtual.setEmail(estadoAntigo.getEmail());
+    } else {
+        contatos.add(estadoAntigo);
+    }
+
+    repository.salvar(contatos);
+    return true;
+}
+
+
+
+
 
   
     /**
@@ -110,5 +164,20 @@ public class GestorContatos {
     }
     
     
+
+
+
+    
+
+public void adicionarObservador(ObservadorContatos obs) {
+    observadores.add(obs);
+}
+
+private void notificar() {
+    for (ObservadorContatos obs : observadores) {
+        obs.atualizar(new ArrayList<>(contatos));  // passar cópia para evitar alterações externas
+    }
+}
+
 }
 

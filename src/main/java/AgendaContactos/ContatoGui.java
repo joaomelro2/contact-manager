@@ -1,5 +1,6 @@
 package AgendaContactos;
 
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -7,12 +8,13 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
+
 /**
  * Classe que representa a interface gráfica para gestão de contactos.
  * Permite adicionar, editar, pesquisar e ordenar os contactos numa tabela.
  * Utiliza um modelo de dados fornecido pela classe {@link GestorContatos}.
  */
-public class ContatoGui extends JFrame {
+public class ContatoGui extends JFrame implements ObservadorContatos {
     /** Gestor de contactos que manipula os dados. */
     private GestorContatos manipular;
      /** Gestor de contactos que manipula os dados. */
@@ -30,7 +32,8 @@ public class ContatoGui extends JFrame {
      */
     public ContatoGui() {
         try {
-            manipular = new GestorContatos(new FicheiroContatos());
+          manipular = new GestorContatos(RepositorioFactory.criarRepositorio());
+          manipular.adicionarObservador(this);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar contatos!", "Erro", JOptionPane.ERROR_MESSAGE);
             manipular = null;
@@ -51,6 +54,20 @@ public class ContatoGui extends JFrame {
         JButton btnPesquisar = new JButton("Pesquisar");
         JButton btnOrdenarPorNome = new JButton("Ordenar por Nome");
         JButton btnOrdenarPorEmail = new JButton("Ordenar por Email");
+
+        JButton btnDesfazer = new JButton("Desfazer");
+        painelBotoes.add(btnDesfazer);
+        btnDesfazer.addActionListener(e -> desfazerAcao());
+
+
+        KeyStroke ctrlZ = KeyStroke.getKeyStroke("control Z");
+        tabela.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ctrlZ, "desfazerAcao");
+        tabela.getActionMap().put("desfazerAcao", new AbstractAction() {
+         @Override
+             public void actionPerformed(ActionEvent e) {
+                desfazerAcao();
+            }
+        });
 
         painelBotoes.add(btnAdicionar);
         painelBotoes.add(btnEditar);
@@ -95,7 +112,13 @@ public class ContatoGui extends JFrame {
         } while (!validarEmail(email));
 
         try {
-            manipular.adicionarContato(new Contato(nome, telefone, email));
+            Contato novo = new ContatoBuilder()
+                .comNome(nome)
+                .comTelefone(telefone)
+                .comEmail(email)
+                .construir();
+
+            manipular.adicionarContato(novo);
             atualizarTabela();
         } catch (IOException ex) {
             JOptionPane.showMessageDialog(this, "Erro ao adicionar contato!", "Erro", JOptionPane.ERROR_MESSAGE);
@@ -221,4 +244,29 @@ public class ContatoGui extends JFrame {
         JOptionPane.showMessageDialog(this, "Email inválido! Deve conter @.", "Erro", JOptionPane.ERROR_MESSAGE);
         return false;
     }
+
+    private void desfazerAcao() {
+    if (manipular == null) return;
+
+    try {
+        boolean sucesso = manipular.desfazerAcao();
+        if (sucesso) {
+            atualizarTabela();
+            JOptionPane.showMessageDialog(this, "Última alteração desfeita.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Nada para desfazer.");
+        }
+    } catch (IOException ex) {
+        JOptionPane.showMessageDialog(this, "Erro ao desfazer alteração.", "Erro", JOptionPane.ERROR_MESSAGE);
+    }
 }
+
+@Override
+public void atualizar(List<Contato> contatos) {
+    atualizarTabela(contatos);
+    JOptionPane.showMessageDialog(this, "Lista de contatos atualizada automaticamente.");
+}
+}
+
+
+
