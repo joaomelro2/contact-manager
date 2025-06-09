@@ -15,6 +15,8 @@ import java.util.Stack;
  */
 public class GestorContatos {
 
+    private List<ObservadorContatos> observadores = new ArrayList<>();
+
     /** Lista de contactos geridos pelo gestor. */
     private List<Contato> contatos;
     /** Repositório para carregar e salvar os contactos. */
@@ -42,6 +44,9 @@ public class GestorContatos {
     public void adicionarContato(Contato contato) throws IOException {
         contatos.add(contato);
         repository.salvar(contatos);
+        notificar();
+
+        
     }
 
    
@@ -72,6 +77,7 @@ public class GestorContatos {
             contatoOriginal.setTelefone(novoTelefone);
             contatoOriginal.setEmail(novoEmail);
             repository.salvar(contatos);
+            notificar();
         }
 
     }
@@ -158,5 +164,20 @@ public boolean desfazerAcao() throws IOException {
     }
     
     
+
+
+
+    
+
+public void adicionarObservador(ObservadorContatos obs) {
+    observadores.add(obs);
+}
+
+private void notificar() {
+    for (ObservadorContatos obs : observadores) {
+        obs.atualizar(new ArrayList<>(contatos));  // passar cópia para evitar alterações externas
+    }
+}
+
 }
 

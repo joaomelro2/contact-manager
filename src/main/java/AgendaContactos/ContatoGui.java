@@ -14,7 +14,7 @@ import javax.swing.table.DefaultTableModel;
  * Permite adicionar, editar, pesquisar e ordenar os contactos numa tabela.
  * Utiliza um modelo de dados fornecido pela classe {@link GestorContatos}.
  */
-public class ContatoGui extends JFrame {
+public class ContatoGui extends JFrame implements ObservadorContatos {
     /** Gestor de contactos que manipula os dados. */
     private GestorContatos manipular;
      /** Gestor de contactos que manipula os dados. */
@@ -33,6 +33,7 @@ public class ContatoGui extends JFrame {
     public ContatoGui() {
         try {
           manipular = new GestorContatos(RepositorioFactory.criarRepositorio());
+          manipular.adicionarObservador(this);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Erro ao carregar contatos!", "Erro", JOptionPane.ERROR_MESSAGE);
             manipular = null;
@@ -260,5 +261,12 @@ public class ContatoGui extends JFrame {
     }
 }
 
-
+@Override
+public void atualizar(List<Contato> contatos) {
+    atualizarTabela(contatos);
+    JOptionPane.showMessageDialog(this, "Lista de contatos atualizada automaticamente.");
 }
+}
+
+
+
