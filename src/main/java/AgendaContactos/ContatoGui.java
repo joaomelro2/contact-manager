@@ -44,7 +44,13 @@ public class ContatoGui extends JFrame implements ObservadorContatos {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        modeloTabela = new DefaultTableModel(new String[]{"Nome", "Telefone", "Email"}, 0);
+        modeloTabela = new DefaultTableModel(new String[]{"Nome", "Telefone", "Email"}, 0) {
+    @Override
+    public boolean isCellEditable(int row, int column) {
+        return false; // Impede a edição direta das células
+    }
+};
+
         tabela = new JTable(modeloTabela);
         JScrollPane scrollPane = new JScrollPane(tabela);
 
@@ -55,10 +61,8 @@ public class ContatoGui extends JFrame implements ObservadorContatos {
         JButton btnOrdenarPorNome = new JButton("Ordenar por Nome");
         JButton btnOrdenarPorEmail = new JButton("Ordenar por Email");
 
-        JButton btnDesfazer = new JButton("Desfazer");
-        painelBotoes.add(btnDesfazer);
-        btnDesfazer.addActionListener(e -> desfazerAcao());
-
+        
+       
 
         KeyStroke ctrlZ = KeyStroke.getKeyStroke("control Z");
         tabela.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ctrlZ, "desfazerAcao");
@@ -74,6 +78,7 @@ public class ContatoGui extends JFrame implements ObservadorContatos {
         painelBotoes.add(btnPesquisar);
         painelBotoes.add(btnOrdenarPorNome);
         painelBotoes.add(btnOrdenarPorEmail);
+       
 
         btnAdicionar.addActionListener(this::adicionarContato);
         btnEditar.addActionListener(this::editarContato);
@@ -85,7 +90,7 @@ public class ContatoGui extends JFrame implements ObservadorContatos {
         add(painelBotoes, BorderLayout.SOUTH);
 
         atualizarTabela();
-
+        pack();
         setVisible(true);
     }
 
